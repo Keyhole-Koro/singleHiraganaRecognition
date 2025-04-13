@@ -6,6 +6,12 @@ from tensorflow.keras.optimizers import Adadelta
 from tensorflow.keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder
 import cv2
+import tensorflow as tf
+
+# Ensure GPU is used if available
+physical_devices = tf.config.list_physical_devices('GPU')
+if physical_devices:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 def load_data(label_file, image_dir):
     images = []
@@ -50,7 +56,7 @@ history_fine = model.fit(train_images, train_labels, epochs=50, batch_size=32,
                          validation_data=(valid_images, valid_labels), 
                          callbacks=[csv_logger, early_stopping, reduce_lr, checkpoint])
 
-model.save('hiragana_vgg_model_finetuned.h5')  # Save the final fine-tuned model
+model.save('hiragana_vgg_model_finetuned.keras')  # Save the final fine-tuned model in Keras format
 
 loss, accuracy = model.evaluate(valid_images, valid_labels)
 print(f'Validation Accuracy after fine-tuning: {accuracy * 100:.2f}%')
